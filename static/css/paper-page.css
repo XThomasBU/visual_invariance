@@ -1,0 +1,536 @@
+/* Overrides for VLM invariance project page — extends reference index.css patterns */
+
+/* One scale: body = 1rem; section headings = Bulma title is-4; subheads = 1rem semibold */
+:root {
+  --paper-text: 1rem;
+  --paper-line: 1.75;
+  --paper-line-tight: 1.65;
+  --paper-color: #333;
+  --paper-color-muted: #525252;
+}
+
+.paper-body {
+  font-size: var(--paper-text);
+  line-height: var(--paper-line);
+  font-weight: 300;
+  color: var(--paper-color);
+}
+
+.content.paper-body {
+  font-size: var(--paper-text);
+}
+
+.content.paper-body p {
+  font-size: var(--paper-text);
+}
+
+.paper-body-muted {
+  font-size: var(--paper-text);
+  line-height: var(--paper-line-tight);
+  font-weight: 300;
+  color: var(--paper-color-muted);
+}
+
+.paper-figure-caption {
+  font-size: var(--paper-text);
+  line-height: var(--paper-line-tight);
+  font-weight: 300;
+  font-style: italic;
+  color: #666;
+  text-align: center;
+  max-width: 44rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.paper-subhead {
+  font-size: var(--paper-text);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: #333;
+}
+
+.paper-bibtex {
+  font-family: 'Noto Sans', sans-serif;
+  font-size: var(--paper-text);
+  line-height: 1.6;
+  color: #333;
+  font-weight: 300;
+}
+
+.paper-copy-btn {
+  font-size: var(--paper-text);
+  font-weight: 300;
+}
+
+/* Figures: full width in column — no bleed / overflow clipping (keeps full image visible) */
+.paper-teaser-wrap {
+  margin-top: 2rem;
+  width: 100%;
+  overflow: visible;
+}
+
+.paper-teaser-img {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 12px;
+  image-rendering: -webkit-optimize-contrast;
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  transition: none !important;
+  will-change: auto;
+}
+
+.paper-teaser-img:hover {
+  transform: translateZ(0) !important;
+  opacity: 1 !important;
+  box-shadow: none !important;
+}
+
+/* Datasets & models: left-aligned prose inside centered column */
+.datasets-models-prose {
+  text-align: left;
+  max-width: 52rem;
+  margin: 0 auto;
+}
+
+.datasets-models-subhead {
+  margin-bottom: 1rem;
+  border-bottom: 1px solid #e0e0e0;
+  padding-bottom: 0.5rem;
+}
+
+.datasets-models-p {
+  margin: 0 0 1rem;
+}
+
+.datasets-suite-list {
+  margin: 0 0 1.25rem;
+  padding-left: 1.15rem;
+  list-style-position: outside;
+}
+
+.datasets-suite-list li {
+  margin-bottom: 0.45rem;
+  line-height: var(--paper-line);
+}
+
+.datasets-suite-list li:last-child {
+  margin-bottom: 0;
+}
+
+.datasets-omniglot-wrap {
+  margin-top: 1.5rem;
+}
+
+.datasets-models-caption {
+  text-align: left;
+  font-size: 0.9rem;
+  color: #666;
+  font-weight: 300;
+  margin-top: 1.5rem;
+  line-height: 1.6;
+  letter-spacing: 0.01em;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.datasets-models-models-block {
+  margin-top: 2.75rem;
+}
+
+.datasets-models-models-block .datasets-models-p {
+  margin-bottom: 0;
+}
+
+/* —— Results: rotation recognition table —— */
+.results-section {
+  padding-top: 3rem;
+  padding-bottom: 3rem;
+}
+
+.results-table-outer {
+  position: relative;
+  margin-top: 2rem;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: #fff;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+}
+
+.results-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1rem;
+  padding: 0.75rem 1rem;
+  background: #fafafa;
+  border-bottom: 1px solid #eee;
+  font-size: var(--paper-text);
+}
+
+.results-toolbar-hint {
+  color: #666;
+  font-weight: 300;
+}
+
+.results-toolbar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.results-toolbar-actions button {
+  font-size: 0.875rem;
+  font-weight: 400;
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  background: #fff;
+  color: #333;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.results-toolbar-actions button:hover {
+  background: #f3f3f3;
+  border-color: #ccc;
+}
+
+.results-table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  max-width: 100%;
+}
+
+.results-table {
+  width: 100%;
+  min-width: 720px;
+  border-collapse: collapse;
+  font-size: var(--paper-text);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Stick the whole header block so row 1 + row 2 move together (avoids gap from mismatched sticky tops) */
+.results-table thead {
+  position: sticky;
+  top: 0;
+  z-index: 4;
+}
+
+.results-table thead th {
+  font-family: 'Google Sans', 'Noto Sans', sans-serif;
+  font-weight: 600;
+  text-align: center;
+  vertical-align: middle;
+  padding: 0.45rem 0.35rem;
+  border-bottom: 1px solid #ddd;
+  background: #fff;
+  white-space: nowrap;
+}
+
+.results-table thead tr:first-child th {
+  padding-top: 0.55rem;
+  padding-bottom: 0.35rem;
+  font-size: 0.8125rem;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.results-table thead tr:nth-child(2) th {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #444;
+  padding: 0.35rem 0.3rem;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.15s ease;
+  border-bottom: 1px solid #ccc;
+}
+
+.results-table thead tr:nth-child(2) th.sortable:hover {
+  background: #f0f7ff;
+  color: #1a1a1a;
+}
+
+.results-table thead tr:nth-child(2) th.sortable:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: -2px;
+}
+
+.results-table thead tr:nth-child(2) th .sort-ind {
+  opacity: 0.35;
+  font-size: 0.7em;
+  margin-left: 0.15rem;
+}
+
+.results-table thead tr:nth-child(2) th.sorted .sort-ind {
+  opacity: 1;
+  color: #2563eb;
+}
+
+.results-table thead th.col-dataset {
+  position: sticky;
+  left: 0;
+  z-index: 6;
+  text-align: left;
+  padding-left: 0.75rem;
+  min-width: 9.5rem;
+  background: #fafafa;
+  border-right: 1px solid #e0e0e0;
+  cursor: default;
+  vertical-align: middle;
+}
+
+.results-table thead th.group-qwen25 {
+  background: #e8f8fb;
+}
+
+.results-table thead th.group-qwen3 {
+  background: #e8eefc;
+}
+
+.results-table thead th.group-closed {
+  background: #f0f0f2;
+}
+
+/*
+ * Vertical rules between model blocks — explicit .model-sep on:
+ *   model name row (th), first Acc column per model in metric row (th), body (td).
+ * Collapsed borders align the same grid line through both header rows.
+ */
+.results-table th.model-sep,
+.results-table td.model-sep {
+  border-left: 1px solid rgba(0, 0, 0, 0.13);
+}
+
+.results-table tbody td {
+  padding: 0.45rem 0.35rem;
+  text-align: center;
+  border-bottom: 1px solid #f0f0f0;
+  transition: opacity 0.2s ease, background 0.15s ease;
+}
+
+.results-table tbody td:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  text-align: left;
+  padding-left: 0.75rem;
+  font-weight: 500;
+  color: #222;
+  background: #fff;
+  border-right: 1px solid #eee;
+  white-space: nowrap;
+}
+
+.results-table tbody tr:hover td {
+  background: #fafcff;
+}
+
+.results-table tbody tr:hover td:first-child {
+  background: #f5f8fc;
+}
+
+.results-table tbody tr.row-random td {
+  color: #888;
+  font-style: italic;
+  background: #fafafa;
+}
+
+.results-table tbody tr.row-random:hover td {
+  background: #f5f5f5;
+}
+
+.results-table tbody tr.row-random td:first-child {
+  background: #fafafa;
+}
+
+.results-table .metric-best {
+  color: #0d9488;
+  font-weight: 600;
+}
+
+.results-table .metric-worst {
+  color: #dc2626;
+  font-weight: 600;
+}
+
+.model-head-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+}
+
+.model-head-icon {
+  font-size: 0.72em;
+  opacity: 0.92;
+  flex-shrink: 0;
+  color: var(--paper-color);
+}
+
+.datasets-models-kind-icon {
+  margin-right: 0.35em;
+  vertical-align: -0.06em;
+  font-size: 0.95em;
+}
+
+.results-legend-access {
+  font-size: 0.85em;
+  color: var(--paper-color);
+}
+
+.results-table thead th.model-head {
+  cursor: default;
+}
+
+.results-table thead th.model-head.is-interactive {
+  cursor: pointer;
+}
+
+.results-table thead th.model-head.is-interactive:hover {
+  filter: brightness(0.97);
+}
+
+.results-table-wrap.is-focus-model tbody td.dimmed,
+.results-table-wrap.is-focus-model thead th.dimmed {
+  opacity: 0.28;
+}
+
+.results-table-wrap.is-focus-model tbody td:first-child,
+.results-table-wrap.is-focus-model thead th.col-dataset {
+  opacity: 1;
+}
+
+.results-caption {
+  margin-top: 1.25rem;
+  font-size: var(--paper-text);
+  line-height: var(--paper-line);
+  font-weight: 300;
+  color: var(--paper-color-muted);
+  text-align: left;
+}
+
+.results-caption strong {
+  color: var(--paper-color);
+  font-weight: 600;
+}
+
+.results-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 0.75rem;
+  font-size: 0.875rem;
+  color: #555;
+}
+
+.results-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.results-legend .swatch {
+  width: 0.65rem;
+  height: 0.65rem;
+  border-radius: 2px;
+}
+
+.results-legend .swatch-teal {
+  background: #0d9488;
+}
+
+.results-legend .swatch-red {
+  background: #dc2626;
+}
+
+/* —— Main findings: minimal (Notion-like) —— */
+/* Crisp text: no section transform animation, no inherited * { transition } on transforms,
+   subpixel antialiasing on light backgrounds (reference index.css uses antialiased on images only). */
+.paper-findings {
+  background: #ffffff;
+  animation: none !important;
+  transform: none;
+  opacity: 1;
+  -webkit-font-smoothing: subpixel-antialiased;
+  -moz-osx-font-smoothing: auto;
+  text-rendering: optimizeLegibility;
+}
+
+.paper-findings * {
+  transition-property: none !important;
+}
+
+.findings-header {
+  max-width: 900px;
+  margin: 0 auto 2rem;
+  padding-bottom: 0;
+  text-align: center;
+  border-bottom: none;
+}
+
+
+.findings-lede {
+  font-size: var(--paper-text);
+  font-weight: 300;
+  color: var(--paper-color-muted);
+  line-height: var(--paper-line);
+  margin: 0 auto;
+  max-width: 900px;
+}
+
+.findings-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 3rem;
+  row-gap: 2.25rem;
+  text-align: left;
+  max-width: 48rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@media (max-width: 768px) {
+  .findings-grid {
+    grid-template-columns: 1fr;
+    row-gap: 1.75rem;
+    column-gap: 0;
+  }
+}
+
+.finding-block {
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  box-shadow: none;
+}
+
+.finding-block-title {
+  font-family: 'Google Sans', 'Noto Sans', sans-serif;
+  font-size: var(--paper-text);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: #1a1a1a;
+  line-height: var(--paper-line-tight);
+  margin: 0 0 0.4rem;
+}
+
+.finding-block-text {
+  font-size: var(--paper-text);
+  color: var(--paper-color-muted);
+  line-height: var(--paper-line);
+  font-weight: 300;
+  margin: 0;
+}

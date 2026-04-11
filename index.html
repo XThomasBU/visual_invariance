@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Semantic Richness or Geometric Reasoning? The Fragility of VLM's Visual Invariance. Evaluation of vision language models under rotation, scale, and identity across diverse visual domains.">
+  <meta name="keywords" content="vision language models, VLMs, geometric reasoning, rotation invariance, Omniglot, PACS, multimodal">
+  <title>Semantic Richness or Geometric Reasoning? The Fragility of VLM’s Visual Invariance</title>
+
+  <link rel="icon" href="static/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="static/css/page-style.css">
+</head>
+<body>
+
+  <header class="hero">
+    <div class="wrap center">
+      <h1 class="paper-title anim anim-d1">
+        Semantic Richness or Geometric Reasoning?<br>
+        <em>The Fragility of VLM’s Visual Invariance</em>
+      </h1>
+
+      <p class="authors anim anim-d2">
+        <a href="mailto:jasonq@bu.edu">Jason Qiu</a><sup>1*</sup>,&ensp;
+        <a href="mailto:zmeurer@bu.edu">Zachary Meurer</a><sup>1*</sup>,&ensp;
+        <a href="https://xavierohan.github.io" target="_blank" rel="noopener">Xavier Thomas</a><sup>1*†</sup>,&ensp;
+        <a href="https://deeptigp.github.io/" target="_blank" rel="noopener">Deepti Ghadiyaram</a><sup>1</sup>
+      </p>
+
+      <p class="affil anim anim-d2">
+        <sup>1</sup>Boston University &nbsp;·&nbsp;
+        <sup>*</sup>Equal contribution &nbsp;·&nbsp;
+        <sup>†</sup>Corresponding author
+      </p>
+
+      <div class="hero-links anim anim-d3">
+        <a href="https://arxiv.org/abs/2604.01848" target="_blank" rel="noopener" class="btn btn-primary">
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          Paper (arXiv)
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <hr class="divider">
+
+  <section class="motivation-section" aria-labelledby="motivation-heading">
+    <div class="wrap-wide">
+      <p class="motivation-kicker">Motivation</p>
+      <h2 id="motivation-heading" class="motivation-title"><span class="motivation-title-hook">Do VLMs reason about these images the same way?</span></h2>
+      <p class="motivation-lede">We probe the same geometric tasks across typed fonts, handwritten characters, rare scripts, and different visual domains—semantic richness changes, the spatial question does not, but the performance does.</p>
+
+      <div class="dataset-collage">
+        <article class="dataset-collage-row">
+          <p class="dataset-collage-label">Times New Roman</p>
+          <div class="dataset-collage-strip">
+            <img src="static/images/dataset_sample_folders_10/times_new_roman/times_new_roman_00.png" alt="" loading="lazy" width="64" height="64"><img src="static/images/dataset_sample_folders_10/times_new_roman/times_new_roman_01.png" alt="" loading="lazy" width="64" height="64"><img src="static/images/dataset_sample_folders_10/times_new_roman/times_new_roman_02.png" alt="" loading="lazy" width="64" height="64"><img src="static/images/dataset_sample_folders_10/times_new_roman/times_new_roman_03.png" alt="" loading="lazy" width="64" height="64"><img src="static/images/dataset_sample_folders_10/times_new_roman/times_new_roman_04.png" alt="" loading="lazy" width="64" height="64"><img src="static/images/dataset_sample_folders_10/times_new_roman/times_new_roman_05.png" alt="" loading="lazy" width="64" height="64"><img src="static/images/dataset_sample_folders_10/times_new_roman/times_new_roman_06.png" alt="" loading="lazy" width="64" height="64"><img src="static/images/dataset_sample_folders_10/times_new_roman/times_new_roman_07.png" alt="" loading="lazy" width="64" height="64"><img src="static/images/dataset_sample_folders_10/times_new_roman/times_new_roman_08.png" alt="" loading="lazy" width="64" height="64"><img src="static/images/dataset_sample_folders_10/times_new_roman/times_new_roman_09.png" alt="" loading="lazy" width="64" height="64">
+          </div>
+        </article>
+        <article class="dataset-collage-row">
+          <p class="dataset-collage-label dataset-collage-label--nowrap">Handwritten English</p>
+          <div class="dataset-collage-strip">
+            <img src="static/images/dataset_sample_folders_10/handwritten_english/handwritten_english_00.png" alt="" loading="lazy" width="64" height="64"><img src="static/images/dataset_sample_folders_10/handwritten_english/handwritten_english_01.png" alt="" loading="lazy" width="64" height="64"><img src="static/images/dataset_sample_folders_10/handwritten_english/handwritten_english_02.png" alt="" loading="lazy" width="64" height="64"><img src="static/images/dataset_sample_folders_10/handwritten_english/handwritten_english_03.png" alt="" loading="lazy" width="64" height="64"><img src="static/images/dataset_sample_folders_10/handwritten_english/handwritten_english_04.png" alt="" loading="lazy" width="64" height="64"><img src="static/images/dataset_sample_folders_10/handwritten_english/handwritten_english_05.png" alt="" loading="lazy" width="64" height="64"><img src="static/images/dataset_sample_folders_10/handwritten_english/handwritten_english_06.png" alt="" loading="lazy" width="64" height="64"><img src="static/images/dataset_sample_folders_10/handwritten_english/handwritten_english_07.png" alt="" loading="lazy" width="64" height="64"><img src="static/images/dataset_sample_folders_10/handwritten_english/handwritten_english_08.png" alt="" loading="lazy" width="64" height="64"><img src="static/images/dataset_sample_folders_10/handwritten_english/handwritten_english_09.png" alt="" loading="lazy" width="64" height="64">
+          </div>
+        </article>
+        <article class="dataset-collage-row">
+          <p class="dataset-collage-label">Omniglot</p>
+          <div class="dataset-collage-strip">
+            <img src="static/images/dataset_sample_folders_10/omniglot/omniglot_00.png" alt="" loading="lazy" width="64" height="64"><img src="static/images/dataset_sample_folders_10/omniglot/omniglot_01.png" alt="" loading="lazy" width="64" height="64"><img src="static/images/dataset_sample_folders_10/omniglot/omniglot_02.png" alt="" loading="lazy" width="64" height="64"><img src="static/images/dataset_sample_folders_10/omniglot/omniglot_03.png" alt="" loading="lazy" width="64" height="64"><img src="static/images/dataset_sample_folders_10/omniglot/omniglot_04.png" alt="" loading="lazy" width="64" height="64"><img src="static/images/dataset_sample_folders_10/omniglot/omniglot_05.png" alt="" loading="lazy" width="64" height="64"><img src="static/images/dataset_sample_folders_10/omniglot/omniglot_06.png" alt="" loading="lazy" width="64" height="64"><img src="static/images/dataset_sample_folders_10/omniglot/omniglot_07.png" alt="" loading="lazy" width="64" height="64"><img src="static/images/dataset_sample_folders_10/omniglot/omniglot_08.png" alt="" loading="lazy" width="64" height="64"><img src="static/images/dataset_sample_folders_10/omniglot/omniglot_09.png" alt="" loading="lazy" width="64" height="64">
+          </div>
+        </article>
+        <article class="dataset-collage-row">
+          <p class="dataset-collage-label">PACS · Photo</p>
+          <div class="dataset-collage-strip">
+            <img src="static/images/dataset_sample_folders_10/pacs_photo/pacs_photo_00.png" alt="" loading="lazy" width="64" height="64"><img src="static/images/dataset_sample_folders_10/pacs_photo/pacs_photo_01.png" alt="" loading="lazy" width="64" height="64"><img src="static/images/dataset_sample_folders_10/pacs_photo/pacs_photo_02.png" alt="" loading="lazy" width="64" height="64"><img src="static/images/dataset_sample_folders_10/pacs_photo/pacs_photo_03.png" alt="" loading="lazy" width="64" height="64"><img src="static/images/dataset_sample_folders_10/pacs_photo/pacs_photo_04.png" alt="" loading="lazy" width="64" height="64"><img src="static/images/dataset_sample_folders_10/pacs_photo/pacs_photo_05.png" alt="" loading="lazy" width="64" height="64"><img src="static/images/dataset_sample_folders_10/pacs_photo/pacs_photo_06.png" alt="" loading="lazy" width="64" height="64"><img src="static/images/dataset_sample_folders_10/pacs_photo/pacs_photo_07.png" alt="" loading="lazy" width="64" height="64"><img src="static/images/dataset_sample_folders_10/pacs_photo/pacs_photo_08.png" alt="" loading="lazy" width="64" height="64"><img src="static/images/dataset_sample_folders_10/pacs_photo/pacs_photo_09.png" alt="" loading="lazy" width="64" height="64">
+          </div>
+        </article>
+        <article class="dataset-collage-row">
+          <p class="dataset-collage-label">PACS · Art painting</p>
+          <div class="dataset-collage-strip">
+            <img src="static/images/dataset_sample_folders_10/pacs_art_painting/pacs_art_painting_00.png" alt="" loading="lazy" width="64" height="64"><img src="static/images/dataset_sample_folders_10/pacs_art_painting/pacs_art_painting_01.png" alt="" loading="lazy" width="64" height="64"><img src="static/images/dataset_sample_folders_10/pacs_art_painting/pacs_art_painting_02.png" alt="" loading="lazy" width="64" height="64"><img src="static/images/dataset_sample_folders_10/pacs_art_painting/pacs_art_painting_03.png" alt="" loading="lazy" width="64" height="64"><img src="static/images/dataset_sample_folders_10/pacs_art_painting/pacs_art_painting_04.png" alt="" loading="lazy" width="64" height="64"><img src="static/images/dataset_sample_folders_10/pacs_art_painting/pacs_art_painting_05.png" alt="" loading="lazy" width="64" height="64"><img src="static/images/dataset_sample_folders_10/pacs_art_painting/pacs_art_painting_06.png" alt="" loading="lazy" width="64" height="64"><img src="static/images/dataset_sample_folders_10/pacs_art_painting/pacs_art_painting_07.png" alt="" loading="lazy" width="64" height="64"><img src="static/images/dataset_sample_folders_10/pacs_art_painting/pacs_art_painting_08.png" alt="" loading="lazy" width="64" height="64"><img src="static/images/dataset_sample_folders_10/pacs_art_painting/pacs_art_painting_09.png" alt="" loading="lazy" width="64" height="64">
+          </div>
+        </article>
+        <article class="dataset-collage-row">
+          <p class="dataset-collage-label">PACS · Cartoon</p>
+          <div class="dataset-collage-strip">
+            <img src="static/images/dataset_sample_folders_10/pacs_cartoon/pacs_cartoon_00.png" alt="" loading="lazy" width="64" height="64"><img src="static/images/dataset_sample_folders_10/pacs_cartoon/pacs_cartoon_01.png" alt="" loading="lazy" width="64" height="64"><img src="static/images/dataset_sample_folders_10/pacs_cartoon/pacs_cartoon_02.png" alt="" loading="lazy" width="64" height="64"><img src="static/images/dataset_sample_folders_10/pacs_cartoon/pacs_cartoon_03.png" alt="" loading="lazy" width="64" height="64"><img src="static/images/dataset_sample_folders_10/pacs_cartoon/pacs_cartoon_04.png" alt="" loading="lazy" width="64" height="64"><img src="static/images/dataset_sample_folders_10/pacs_cartoon/pacs_cartoon_05.png" alt="" loading="lazy" width="64" height="64"><img src="static/images/dataset_sample_folders_10/pacs_cartoon/pacs_cartoon_06.png" alt="" loading="lazy" width="64" height="64"><img src="static/images/dataset_sample_folders_10/pacs_cartoon/pacs_cartoon_07.png" alt="" loading="lazy" width="64" height="64"><img src="static/images/dataset_sample_folders_10/pacs_cartoon/pacs_cartoon_08.png" alt="" loading="lazy" width="64" height="64"><img src="static/images/dataset_sample_folders_10/pacs_cartoon/pacs_cartoon_09.png" alt="" loading="lazy" width="64" height="64">
+          </div>
+        </article>
+        <article class="dataset-collage-row">
+          <p class="dataset-collage-label">PACS · Sketch</p>
+          <div class="dataset-collage-strip">
+            <img src="static/images/dataset_sample_folders_10/pacs_sketch/pacs_sketch_00.png" alt="" loading="lazy" width="64" height="64"><img src="static/images/dataset_sample_folders_10/pacs_sketch/pacs_sketch_01.png" alt="" loading="lazy" width="64" height="64"><img src="static/images/dataset_sample_folders_10/pacs_sketch/pacs_sketch_02.png" alt="" loading="lazy" width="64" height="64"><img src="static/images/dataset_sample_folders_10/pacs_sketch/pacs_sketch_03.png" alt="" loading="lazy" width="64" height="64"><img src="static/images/dataset_sample_folders_10/pacs_sketch/pacs_sketch_04.png" alt="" loading="lazy" width="64" height="64"><img src="static/images/dataset_sample_folders_10/pacs_sketch/pacs_sketch_05.png" alt="" loading="lazy" width="64" height="64"><img src="static/images/dataset_sample_folders_10/pacs_sketch/pacs_sketch_06.png" alt="" loading="lazy" width="64" height="64"><img src="static/images/dataset_sample_folders_10/pacs_sketch/pacs_sketch_07.png" alt="" loading="lazy" width="64" height="64"><img src="static/images/dataset_sample_folders_10/pacs_sketch/pacs_sketch_08.png" alt="" loading="lazy" width="64" height="64"><img src="static/images/dataset_sample_folders_10/pacs_sketch/pacs_sketch_09.png" alt="" loading="lazy" width="64" height="64">
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <section>
+    <div class="wrap center">
+      <h2 class="sec-title">Overview</h2>
+      <p class="sec-lede">
+        We test whether state of the art VLMs reason about <strong>rotation</strong>, <strong>scale</strong>, and <strong>identity</strong> consistently across symbolic sketches, natural photos, and art paintings. The figure below summarizes the drop in accuracy as semantic cues become sparse.
+      </p>
+      <div class="figure-wrap">
+        <img class="paper-teaser-img" src="static/images/teaser.pdf" alt="Figure 1: failure of visual transformation reasoning across visual domains" loading="lazy">
+        <p class="figure-cap">
+          <strong>Models are probed on whether two images depict the same object under rotation, scale, or identity.</strong> Performance stays high on photos and art but falls on sketches and symbolic scripts, especially for rotation.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <section>
+    <div class="wrap center">
+      <h2 class="sec-title">Abstract</h2>
+      <div class="abstract-body">
+        <p>
+          This work investigates the fundamental fragility of state of the art vision language models (VLMs) under basic geometric transformations. While modern VLMs excel at semantic tasks such as recognizing objects in canonical orientations and describing complex scenes, they exhibit systematic failures at a more fundamental level: lack of robust spatial invariance and equivariance required to reliably determine object identity under simple rotations, scaling, and identity transformations. We demonstrate this limitation through a systematic evaluation across diverse visual domains, including symbolic sketches, natural photographs, and abstract art. Performance drops sharply as semantic content becomes sparse, and this behavior is observed across architectures, model capacities, and prompting strategies. Overall, our results reveal a systematic gap between semantic understanding and spatial reasoning in current VLMs, highlighting the need for stronger geometric grounding in future multimodal systems.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <section>
+    <div class="wrap">
+      <h2 class="sec-title">Main findings</h2>
+      <p class="sec-lede">Short summary of the main takeaways.</p>
+      <div class="findings-grid">
+        <div class="finding-card">
+          <div class="finding-num">01</div>
+          <p class="finding-title">Sparse semantics expose weak geometric reasoning</p>
+          <p class="finding-body">Accuracy stays high on natural images (e.g., PACS photos) but drops on sketches and symbolic scripts where visual cues are sparse.</p>
+        </div>
+        <div class="finding-card">
+          <div class="finding-num">02</div>
+          <p class="finding-title">Rotation is the hardest transform</p>
+          <p class="finding-body">Across rotation, scale, and identity tasks, rotation recognition is consistently the most challenging for the MLLMs we evaluate.</p>
+        </div>
+        <div class="finding-card">
+          <div class="finding-num">03</div>
+          <p class="finding-title">Not fixed by architecture, scale, or prompting</p>
+          <p class="finding-body">Failures persist regardless of model architecture, scale, or prompting strategy, and are only partially mitigated by in-context learning or structured visual prompts.</p>
+        </div>
+        <div class="finding-card">
+          <div class="finding-num">04</div>
+          <p class="finding-title">Encoder similarity ≠ VLM performance</p>
+          <p class="finding-body">Visual encoders retain rotational similarity, yet VLMs often fail to use it when reasoning with a language decoder.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <section>
+    <div class="wrap">
+      <h2 class="sec-title">Datasets &amp; models</h2>
+      <p class="sec-lede">A suite designed to vary semantic richness independently from visual complexity.</p>
+
+      <ul class="dataset-list">
+        <li class="dataset-item">
+          <p class="dataset-name">Omniglot</p>
+          <p class="dataset-desc">Handwritten characters from 50 scripts, ranging from familiar alphabets to rare writing systems. <strong>(a) Spatial reasoning vs. script familiarity:</strong> mixing prevalent and rare scripts tests whether models rely on geometric reasoning or prior exposure. <strong>(b) Controlled stimuli:</strong> the black-on-white format removes backgrounds, textures, and scene cues, helping isolate spatial reasoning with fewer confounds.</p>
+        </li>
+      
+        <li class="dataset-item">
+          <p class="dataset-name">Times New Roman</p>
+          <p class="dataset-desc">English letters rendered in a single canonical typeface. The familiarity of English characters and the structural precision of digital fonts make it a clean baseline for evaluating geometric robustness.</p>
+        </li>
+      
+        <li class="dataset-item">
+          <p class="dataset-name">Handwritten English</p>
+          <p class="dataset-desc">English letters and digits with natural handwriting variation. It adds stroke-level variability while preserving the familiarity of English characters.</p>
+        </li>
+      
+        <li class="dataset-item">
+          <p class="dataset-name">PACS</p>
+          <p class="dataset-desc">A multi-domain benchmark spanning photo, art painting, cartoon, and sketch. It introduces richer semantics and visual diversity, enabling comparison across levels of visual abstraction.</p>
+        </li>
+      </ul>
+
+      <div class="figure-wrap" style="max-width:680px">
+        <img class="paper-teaser-img" src="static/images/omniglot_grid.png" alt="Grid of character examples across scripts and visual styles (Omniglot style evaluation data)" loading="lazy">
+      </div>
+
+      <div class="models-evaluated">
+        <p class="models-evaluated-label">Models evaluated</p>
+        <div class="model-line">
+          <span class="model-label model-label--with-ico">
+            <svg class="lock-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>
+            Open
+          </span>
+          <span class="model-chip model-chip--qwen25">Qwen2.5-VL-7B</span>
+          <span class="model-chip model-chip--qwen25">Qwen2.5-VL-32B</span>
+          <span class="model-chip model-chip--qwen3">Qwen3-VL-8B</span>
+          <span class="model-chip model-chip--qwen3">Qwen3-VL-30B</span>
+        </div>
+        <div class="model-line">
+          <span class="model-label model-label--with-ico">
+            <svg class="lock-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            Closed
+          </span>
+          <span class="model-chip model-chip--closed-api">GPT-5.2</span>
+          <span class="model-chip model-chip--closed-api">Gemini-2.5-Pro</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <section>
+    <div class="wrap-wide results-section">
+      <h2 class="sec-title sec-title--results">Results</h2>
+
+      <h3 class="results-table-title">Rotation Performance</h3>
+      <p class="sec-lede">Rotation recognition on character datasets (aggregated over 10° to 90° angles). Hover a model name to focus that column group; click <strong>Acc.</strong> / <strong>TNR</strong> / <strong>TPR</strong> to sort rows.</p>
+
+      <div class="results-outer">
+        <div class="results-toolbar results-toolbar--end">
+          <button type="button" id="results-reset">Reset row order</button>
+        </div>
+        <div class="results-scroll">
+          <table class="rt" id="rt">
+            <thead>
+              <tr>
+                <th rowspan="2" class="col-ds" scope="col">Dataset</th>
+                <th colspan="3" class="model-head" data-mi="0" scope="colgroup">
+                  <svg class="lock-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-label="Closed" style="vertical-align:middle;margin-right:4px"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                  GPT-5.2
+                </th>
+                <th colspan="3" class="model-head model-sep" data-mi="1" scope="colgroup">
+                  <svg class="lock-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-label="Closed" style="vertical-align:middle;margin-right:4px"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                  Gemini-2.5-Pro
+                </th>
+                <th colspan="3" class="model-head model-sep" data-mi="2" scope="colgroup">
+                  <svg class="lock-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-label="Open" style="vertical-align:middle;margin-right:4px"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>
+                  Qwen2.5-VL-7B
+                </th>
+                <th colspan="3" class="model-head model-sep" data-mi="3" scope="colgroup">
+                  <svg class="lock-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-label="Open" style="vertical-align:middle;margin-right:4px"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>
+                  Qwen2.5-VL-32B
+                </th>
+                <th colspan="3" class="model-head model-sep" data-mi="4" scope="colgroup">
+                  <svg class="lock-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-label="Open" style="vertical-align:middle;margin-right:4px"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>
+                  Qwen3-VL-8B
+                </th>
+                <th colspan="3" class="model-head model-sep" data-mi="5" scope="colgroup">
+                  <svg class="lock-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-label="Open" style="vertical-align:middle;margin-right:4px"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>
+                  Qwen3-VL-30B
+                </th>
+              </tr>
+              <tr>
+                <th class="sortable" data-mi="0" data-sc="1">Acc.<span class="sort-ind">↕</span></th>
+                <th class="sortable" data-mi="0" data-sc="2">TNR<span class="sort-ind">↕</span></th>
+                <th class="sortable" data-mi="0" data-sc="3">TPR<span class="sort-ind">↕</span></th>
+                <th class="sortable model-sep" data-mi="1" data-sc="4">Acc.<span class="sort-ind">↕</span></th>
+                <th class="sortable" data-mi="1" data-sc="5">TNR<span class="sort-ind">↕</span></th>
+                <th class="sortable" data-mi="1" data-sc="6">TPR<span class="sort-ind">↕</span></th>
+                <th class="sortable model-sep" data-mi="2" data-sc="7">Acc.<span class="sort-ind">↕</span></th>
+                <th class="sortable" data-mi="2" data-sc="8">TNR<span class="sort-ind">↕</span></th>
+                <th class="sortable" data-mi="2" data-sc="9">TPR<span class="sort-ind">↕</span></th>
+                <th class="sortable model-sep" data-mi="3" data-sc="10">Acc.<span class="sort-ind">↕</span></th>
+                <th class="sortable" data-mi="3" data-sc="11">TNR<span class="sort-ind">↕</span></th>
+                <th class="sortable" data-mi="3" data-sc="12">TPR<span class="sort-ind">↕</span></th>
+                <th class="sortable model-sep" data-mi="4" data-sc="13">Acc.<span class="sort-ind">↕</span></th>
+                <th class="sortable" data-mi="4" data-sc="14">TNR<span class="sort-ind">↕</span></th>
+                <th class="sortable" data-mi="4" data-sc="15">TPR<span class="sort-ind">↕</span></th>
+                <th class="sortable model-sep" data-mi="5" data-sc="16">Acc.<span class="sort-ind">↕</span></th>
+                <th class="sortable" data-mi="5" data-sc="17">TNR<span class="sort-ind">↕</span></th>
+                <th class="sortable" data-mi="5" data-sc="18">TPR<span class="sort-ind">↕</span></th>
+              </tr>
+            </thead>
+            <tbody id="rt-body">
+              <tr data-key="times" data-vals="74.25,95.09,53.42,89.32,100.00,78.63,51.07,100.00,2.14,52.67,100.00,5.34,50.11,100.00,0.21,65.81,100.00,31.62">
+                <td class="td-ds">Times New Roman</td>
+                <td data-mi="0">74.25</td><td data-mi="0">95.09</td><td data-mi="0">53.42</td>
+                <td data-mi="1" class="model-sep">89.32</td><td data-mi="1">100.00</td><td data-mi="1">78.63</td>
+                <td data-mi="2" class="model-sep">51.07</td><td data-mi="2">100.00</td><td data-mi="2">02.14</td>
+                <td data-mi="3" class="model-sep">52.67</td><td data-mi="3">100.00</td><td data-mi="3">05.34</td>
+                <td data-mi="4" class="model-sep">50.11</td><td data-mi="4">100.00</td><td data-mi="4">00.21</td>
+                <td data-mi="5" class="model-sep">65.81</td><td data-mi="5">100.00</td><td data-mi="5">31.62</td>
+              </tr>
+              <tr data-key="handwritten" data-vals="67.84,96.58,39.10,68.27,99.57,36.97,50.85,98.08,3.63,62.50,98.08,26.92,50.00,100.00,0.00,55.98,100.00,11.97">
+                <td class="td-ds">Handwritten English</td>
+                <td data-mi="0">67.84</td><td data-mi="0">96.58</td><td data-mi="0">39.10</td>
+                <td data-mi="1" class="model-sep">68.27</td><td data-mi="1">99.57</td><td data-mi="1">36.97</td>
+                <td data-mi="2" class="model-sep">50.85</td><td data-mi="2">98.08</td><td data-mi="2">03.63</td>
+                <td data-mi="3" class="model-sep">62.50</td><td data-mi="3">98.08</td><td data-mi="3">26.92</td>
+                <td data-mi="4" class="model-sep">50.00</td><td data-mi="4">100.00</td><td data-mi="4">00.00</td>
+                <td data-mi="5" class="model-sep">55.98</td><td data-mi="5">100.00</td><td data-mi="5">11.97</td>
+              </tr>
+              <tr data-key="omniglot" data-vals="75.55,80.91,70.19,76.90,98.69,55.10,50.72,99.46,1.98,54.17,94.71,13.62,51.01,99.96,2.06,56.64,99.75,13.53">
+                <td class="td-ds">Omniglot</td>
+                <td data-mi="0">75.55</td><td data-mi="0">80.91</td><td data-mi="0">70.19</td>
+                <td data-mi="1" class="model-sep">76.90</td><td data-mi="1">98.69</td><td data-mi="1">55.10</td>
+                <td data-mi="2" class="model-sep">50.72</td><td data-mi="2">99.46</td><td data-mi="2">01.98</td>
+                <td data-mi="3" class="model-sep">54.17</td><td data-mi="3">94.71</td><td data-mi="3">13.62</td>
+                <td data-mi="4" class="model-sep">51.01</td><td data-mi="4">99.96</td><td data-mi="4">02.06</td>
+                <td data-mi="5" class="model-sep">56.64</td><td data-mi="5">99.75</td><td data-mi="5">13.53</td>
+              </tr>
+              <tr class="row-random" data-key="random" data-vals="50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50">
+                <td class="td-ds">Random guess</td>
+                <td data-mi="0">50.00</td><td data-mi="0">50.00</td><td data-mi="0">50.00</td>
+                <td data-mi="1" class="model-sep">50.00</td><td data-mi="1">50.00</td><td data-mi="1">50.00</td>
+                <td data-mi="2" class="model-sep">50.00</td><td data-mi="2">50.00</td><td data-mi="2">50.00</td>
+                <td data-mi="3" class="model-sep">50.00</td><td data-mi="3">50.00</td><td data-mi="3">50.00</td>
+                <td data-mi="4" class="model-sep">50.00</td><td data-mi="4">50.00</td><td data-mi="4">50.00</td>
+                <td data-mi="5" class="model-sep">50.00</td><td data-mi="5">50.00</td><td data-mi="5">50.00</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="rt-legend" role="group" aria-label="Table legend">
+        <span class="rt-legend-item"><span class="swatch swatch-teal" aria-hidden="true"></span> Best accuracy per model (across datasets)</span>
+        <span class="rt-legend-item"><span class="swatch swatch-red" aria-hidden="true"></span> Worst accuracy per model</span>
+        <span class="rt-legend-item">
+          <svg class="lock-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          Closed source (API)
+        </span>
+        <span class="rt-legend-item">
+          <svg class="lock-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>
+          Open weights
+        </span>
+      </div>
+
+      <p class="figure-cap results-cap">
+        <strong>Rotation recognition across character datasets.</strong>
+        Best and worst accuracy per model across datasets are highlighted in teal and red, respectively. Values are aggregated over rotation angles 10° to 90°. TNR stays near ceiling for many settings while TPR stays consistenly low. Closed source models tend to outperform open weights, but the pattern holds across the board.
+      </p>
+
+      <h3 class="results-table-title results-table-title--after-cap">Rotation Performance for PACS Domains</h3>
+      <p class="sec-lede sec-lede--compact">Rotation recognition across PACS domains (aggregated over 90°, 180°, and 270°).</p>
+
+      <div class="results-outer">
+        <div class="results-toolbar results-toolbar--end">
+          <button type="button" id="results-reset-pacs">Reset row order</button>
+        </div>
+        <div class="results-scroll">
+          <table class="rt" id="rt-pacs">
+            <thead>
+              <tr>
+                <th rowspan="2" class="col-ds" scope="col">Domain</th>
+                <th colspan="3" class="model-head" data-mi="0" scope="colgroup">
+                  <svg class="lock-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-label="Closed" style="vertical-align:middle;margin-right:4px"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                  GPT-5.2
+                </th>
+                <th colspan="3" class="model-head model-sep" data-mi="1" scope="colgroup">
+                  <svg class="lock-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-label="Closed" style="vertical-align:middle;margin-right:4px"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                  Gemini-2.5-Pro
+                </th>
+                <th colspan="3" class="model-head model-sep" data-mi="2" scope="colgroup">
+                  <svg class="lock-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-label="Open" style="vertical-align:middle;margin-right:4px"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>
+                  Qwen2.5-VL-7B
+                </th>
+                <th colspan="3" class="model-head model-sep" data-mi="3" scope="colgroup">
+                  <svg class="lock-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-label="Open" style="vertical-align:middle;margin-right:4px"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>
+                  Qwen2.5-VL-32B
+                </th>
+                <th colspan="3" class="model-head model-sep" data-mi="4" scope="colgroup">
+                  <svg class="lock-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-label="Open" style="vertical-align:middle;margin-right:4px"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>
+                  Qwen3-VL-8B
+                </th>
+                <th colspan="3" class="model-head model-sep" data-mi="5" scope="colgroup">
+                  <svg class="lock-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-label="Open" style="vertical-align:middle;margin-right:4px"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>
+                  Qwen3-VL-30B
+                </th>
+              </tr>
+              <tr>
+                <th class="sortable" data-mi="0" data-sc="1">Acc.<span class="sort-ind">↕</span></th>
+                <th class="sortable" data-mi="0" data-sc="2">TNR<span class="sort-ind">↕</span></th>
+                <th class="sortable" data-mi="0" data-sc="3">TPR<span class="sort-ind">↕</span></th>
+                <th class="sortable model-sep" data-mi="1" data-sc="4">Acc.<span class="sort-ind">↕</span></th>
+                <th class="sortable" data-mi="1" data-sc="5">TNR<span class="sort-ind">↕</span></th>
+                <th class="sortable" data-mi="1" data-sc="6">TPR<span class="sort-ind">↕</span></th>
+                <th class="sortable model-sep" data-mi="2" data-sc="7">Acc.<span class="sort-ind">↕</span></th>
+                <th class="sortable" data-mi="2" data-sc="8">TNR<span class="sort-ind">↕</span></th>
+                <th class="sortable" data-mi="2" data-sc="9">TPR<span class="sort-ind">↕</span></th>
+                <th class="sortable model-sep" data-mi="3" data-sc="10">Acc.<span class="sort-ind">↕</span></th>
+                <th class="sortable" data-mi="3" data-sc="11">TNR<span class="sort-ind">↕</span></th>
+                <th class="sortable" data-mi="3" data-sc="12">TPR<span class="sort-ind">↕</span></th>
+                <th class="sortable model-sep" data-mi="4" data-sc="13">Acc.<span class="sort-ind">↕</span></th>
+                <th class="sortable" data-mi="4" data-sc="14">TNR<span class="sort-ind">↕</span></th>
+                <th class="sortable" data-mi="4" data-sc="15">TPR<span class="sort-ind">↕</span></th>
+                <th class="sortable model-sep" data-mi="5" data-sc="16">Acc.<span class="sort-ind">↕</span></th>
+                <th class="sortable" data-mi="5" data-sc="17">TNR<span class="sort-ind">↕</span></th>
+                <th class="sortable" data-mi="5" data-sc="18">TPR<span class="sort-ind">↕</span></th>
+              </tr>
+            </thead>
+            <tbody id="rt-body-pacs">
+              <tr data-key="photo" data-vals="99.5,100,99,92.67,100,85.33,59.42,100,18.83,77.67,100,55.33,50.25,100,0.5,64.58,100,29.17">
+                <td class="td-ds">Photo</td>
+                <td data-mi="0">99.50</td><td data-mi="0">100.00</td><td data-mi="0">99.00</td>
+                <td data-mi="1" class="model-sep">92.67</td><td data-mi="1">100.00</td><td data-mi="1">85.33</td>
+                <td data-mi="2" class="model-sep">59.42</td><td data-mi="2">100.00</td><td data-mi="2">18.83</td>
+                <td data-mi="3" class="model-sep">77.67</td><td data-mi="3">100.00</td><td data-mi="3">55.33</td>
+                <td data-mi="4" class="model-sep">50.25</td><td data-mi="4">100.00</td><td data-mi="4">00.50</td>
+                <td data-mi="5" class="model-sep">64.58</td><td data-mi="5">100.00</td><td data-mi="5">29.17</td>
+              </tr>
+              <tr data-key="art" data-vals="99.5,100,99,94.17,100,88.33,50.25,100,0.5,63.5,100,27,50.08,100,0.17,55.08,100,10.17">
+                <td class="td-ds">Art Painting</td>
+                <td data-mi="0">99.50</td><td data-mi="0">100.00</td><td data-mi="0">99.00</td>
+                <td data-mi="1" class="model-sep">94.17</td><td data-mi="1">100.00</td><td data-mi="1">88.33</td>
+                <td data-mi="2" class="model-sep">50.25</td><td data-mi="2">100.00</td><td data-mi="2">00.50</td>
+                <td data-mi="3" class="model-sep">63.50</td><td data-mi="3">100.00</td><td data-mi="3">27.00</td>
+                <td data-mi="4" class="model-sep">50.08</td><td data-mi="4">100.00</td><td data-mi="4">00.17</td>
+                <td data-mi="5" class="model-sep">55.08</td><td data-mi="5">100.00</td><td data-mi="5">10.17</td>
+              </tr>
+              <tr data-key="cartoon" data-vals="98.17,100,96.33,90.33,100,80.67,51.42,100,2.83,70.08,100,40.17,50.25,100,0.5,60.67,100,21.33">
+                <td class="td-ds">Cartoon</td>
+                <td data-mi="0">98.17</td><td data-mi="0">100.00</td><td data-mi="0">96.33</td>
+                <td data-mi="1" class="model-sep">90.33</td><td data-mi="1">100.00</td><td data-mi="1">80.67</td>
+                <td data-mi="2" class="model-sep">51.42</td><td data-mi="2">100.00</td><td data-mi="2">02.83</td>
+                <td data-mi="3" class="model-sep">70.08</td><td data-mi="3">100.00</td><td data-mi="3">40.17</td>
+                <td data-mi="4" class="model-sep">50.25</td><td data-mi="4">100.00</td><td data-mi="4">00.50</td>
+                <td data-mi="5" class="model-sep">60.67</td><td data-mi="5">100.00</td><td data-mi="5">21.33</td>
+              </tr>
+              <tr data-key="sketch" data-vals="92.25,99.67,84.83,86.5,99.83,73.17,52.25,100,4.5,57.25,100,14.5,50.42,100,0.83,52.83,100,5.67">
+                <td class="td-ds">Sketch</td>
+                <td data-mi="0">92.25</td><td data-mi="0">99.67</td><td data-mi="0">84.83</td>
+                <td data-mi="1" class="model-sep">86.50</td><td data-mi="1">99.83</td><td data-mi="1">73.17</td>
+                <td data-mi="2" class="model-sep">52.25</td><td data-mi="2">100.00</td><td data-mi="2">04.50</td>
+                <td data-mi="3" class="model-sep">57.25</td><td data-mi="3">100.00</td><td data-mi="3">14.50</td>
+                <td data-mi="4" class="model-sep">50.42</td><td data-mi="4">100.00</td><td data-mi="4">00.83</td>
+                <td data-mi="5" class="model-sep">52.83</td><td data-mi="5">100.00</td><td data-mi="5">05.67</td>
+              </tr>
+              <tr class="row-random" data-key="random" data-vals="50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50">
+                <td class="td-ds">Random guess</td>
+                <td data-mi="0">50.00</td><td data-mi="0">50.00</td><td data-mi="0">50.00</td>
+                <td data-mi="1" class="model-sep">50.00</td><td data-mi="1">50.00</td><td data-mi="1">50.00</td>
+                <td data-mi="2" class="model-sep">50.00</td><td data-mi="2">50.00</td><td data-mi="2">50.00</td>
+                <td data-mi="3" class="model-sep">50.00</td><td data-mi="3">50.00</td><td data-mi="3">50.00</td>
+                <td data-mi="4" class="model-sep">50.00</td><td data-mi="4">50.00</td><td data-mi="4">50.00</td>
+                <td data-mi="5" class="model-sep">50.00</td><td data-mi="5">50.00</td><td data-mi="5">50.00</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="rt-legend" role="group" aria-label="PACS table legend">
+        <span class="rt-legend-item"><span class="swatch swatch-teal" aria-hidden="true"></span> Best accuracy per model (across domains)</span>
+        <span class="rt-legend-item"><span class="swatch swatch-red" aria-hidden="true"></span> Worst accuracy per model</span>
+        <span class="rt-legend-item">
+          <svg class="lock-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          Closed source (API)
+        </span>
+        <span class="rt-legend-item">
+          <svg class="lock-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>
+          Open weights
+        </span>
+      </div>
+
+      <p class="figure-cap results-cap">
+        <strong>Rotation recognition performance across PACS domains.</strong>
+        Performance aggregated over rotation angles 90°, 180°, and 270°. While TNR remains near-perfect across models, TPR varies significantly across domains, with strong performance on photos and substantial degradation on sketches, indicating reliance on semantic cues rather than true geometric reasoning.
+      </p>
+
+      <h3 class="results-table-title results-table-title--after-cap">Scale-invariance performance</h3>
+      <p class="sec-lede sec-lede--compact">Scale-invariance task: metrics aggregated across all scales (0.1×, 0.3×, 0.5×, 0.9×).</p>
+
+      <div class="results-outer">
+        <div class="results-toolbar results-toolbar--end">
+          <button type="button" id="results-reset-scale">Reset row order</button>
+        </div>
+        <div class="results-scroll">
+          <table class="rt" id="rt-scale">
+            <thead>
+              <tr>
+                <th rowspan="2" class="col-ds" scope="col">Dataset</th>
+                <th colspan="3" class="model-head" data-mi="0" scope="colgroup">
+                  <svg class="lock-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-label="Closed" style="vertical-align:middle;margin-right:4px"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                  GPT-5.2
+                </th>
+                <th colspan="3" class="model-head model-sep" data-mi="1" scope="colgroup">
+                  <svg class="lock-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-label="Closed" style="vertical-align:middle;margin-right:4px"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                  Gemini-2.5-Pro
+                </th>
+                <th colspan="3" class="model-head model-sep" data-mi="2" scope="colgroup">
+                  <svg class="lock-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-label="Open" style="vertical-align:middle;margin-right:4px"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>
+                  Qwen2.5-VL-7B
+                </th>
+                <th colspan="3" class="model-head model-sep" data-mi="3" scope="colgroup">
+                  <svg class="lock-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-label="Open" style="vertical-align:middle;margin-right:4px"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>
+                  Qwen2.5-VL-32B
+                </th>
+                <th colspan="3" class="model-head model-sep" data-mi="4" scope="colgroup">
+                  <svg class="lock-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-label="Open" style="vertical-align:middle;margin-right:4px"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>
+                  Qwen3-VL-8B
+                </th>
+                <th colspan="3" class="model-head model-sep" data-mi="5" scope="colgroup">
+                  <svg class="lock-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-label="Open" style="vertical-align:middle;margin-right:4px"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>
+                  Qwen3-VL-30B
+                </th>
+              </tr>
+              <tr>
+                <th class="sortable" data-mi="0" data-sc="1">Acc.<span class="sort-ind">↕</span></th>
+                <th class="sortable" data-mi="0" data-sc="2">TNR<span class="sort-ind">↕</span></th>
+                <th class="sortable" data-mi="0" data-sc="3">TPR<span class="sort-ind">↕</span></th>
+                <th class="sortable model-sep" data-mi="1" data-sc="4">Acc.<span class="sort-ind">↕</span></th>
+                <th class="sortable" data-mi="1" data-sc="5">TNR<span class="sort-ind">↕</span></th>
+                <th class="sortable" data-mi="1" data-sc="6">TPR<span class="sort-ind">↕</span></th>
+                <th class="sortable model-sep" data-mi="2" data-sc="7">Acc.<span class="sort-ind">↕</span></th>
+                <th class="sortable" data-mi="2" data-sc="8">TNR<span class="sort-ind">↕</span></th>
+                <th class="sortable" data-mi="2" data-sc="9">TPR<span class="sort-ind">↕</span></th>
+                <th class="sortable model-sep" data-mi="3" data-sc="10">Acc.<span class="sort-ind">↕</span></th>
+                <th class="sortable" data-mi="3" data-sc="11">TNR<span class="sort-ind">↕</span></th>
+                <th class="sortable" data-mi="3" data-sc="12">TPR<span class="sort-ind">↕</span></th>
+                <th class="sortable model-sep" data-mi="4" data-sc="13">Acc.<span class="sort-ind">↕</span></th>
+                <th class="sortable" data-mi="4" data-sc="14">TNR<span class="sort-ind">↕</span></th>
+                <th class="sortable" data-mi="4" data-sc="15">TPR<span class="sort-ind">↕</span></th>
+                <th class="sortable model-sep" data-mi="5" data-sc="16">Acc.<span class="sort-ind">↕</span></th>
+                <th class="sortable" data-mi="5" data-sc="17">TNR<span class="sort-ind">↕</span></th>
+                <th class="sortable" data-mi="5" data-sc="18">TPR<span class="sort-ind">↕</span></th>
+              </tr>
+            </thead>
+            <tbody id="rt-body-scale">
+              <tr data-key="times" data-vals="98.79,99.03,98.55,99.51,100,99.03,98.80,97.60,100,99.76,99.52,100,100,100,100,98.79,97.59,100">
+                <td class="td-ds">Times New Roman</td>
+                <td data-mi="0">98.79</td><td data-mi="0">99.03</td><td data-mi="0">98.55</td>
+                <td data-mi="1" class="model-sep">99.51</td><td data-mi="1">100.00</td><td data-mi="1">99.03</td>
+                <td data-mi="2" class="model-sep">98.80</td><td data-mi="2">97.60</td><td data-mi="2">100.00</td>
+                <td data-mi="3" class="model-sep">99.76</td><td data-mi="3">99.52</td><td data-mi="3">100.00</td>
+                <td data-mi="4" class="model-sep">100.00</td><td data-mi="4">100.00</td><td data-mi="4">100.00</td>
+                <td data-mi="5" class="model-sep">98.79</td><td data-mi="5">97.59</td><td data-mi="5">100.00</td>
+              </tr>
+              <tr data-key="handwritten" data-vals="98.07,98.07,98.07,96.63,98.07,95.19,96.77,95.56,97.98,95.36,92.34,98.39,97.59,95.19,100,97.59,99.03,96.15">
+                <td class="td-ds">Handwritten English</td>
+                <td data-mi="0">98.07</td><td data-mi="0">98.07</td><td data-mi="0">98.07</td>
+                <td data-mi="1" class="model-sep">96.63</td><td data-mi="1">98.07</td><td data-mi="1">95.19</td>
+                <td data-mi="2" class="model-sep">96.77</td><td data-mi="2">95.56</td><td data-mi="2">97.98</td>
+                <td data-mi="3" class="model-sep">95.36</td><td data-mi="3">92.34</td><td data-mi="3">98.39</td>
+                <td data-mi="4" class="model-sep">97.59</td><td data-mi="4">95.19</td><td data-mi="4">100.00</td>
+                <td data-mi="5" class="model-sep">97.59</td><td data-mi="5">99.03</td><td data-mi="5">96.15</td>
+              </tr>
+              <tr data-key="omniglot" data-vals="79.72,93.20,66.23,82.56,90.11,75.01,77.40,92.99,61.81,74.21,67.87,80.55,76.05,97.11,54.99,77.04,95.44,58.64">
+                <td class="td-ds">Omniglot</td>
+                <td data-mi="0">79.72</td><td data-mi="0">93.20</td><td data-mi="0">66.23</td>
+                <td data-mi="1" class="model-sep">82.56</td><td data-mi="1">90.11</td><td data-mi="1">75.01</td>
+                <td data-mi="2" class="model-sep">77.40</td><td data-mi="2">92.99</td><td data-mi="2">61.81</td>
+                <td data-mi="3" class="model-sep">74.21</td><td data-mi="3">67.87</td><td data-mi="3">80.55</td>
+                <td data-mi="4" class="model-sep">76.05</td><td data-mi="4">97.11</td><td data-mi="4">54.99</td>
+                <td data-mi="5" class="model-sep">77.04</td><td data-mi="5">95.44</td><td data-mi="5">58.64</td>
+              </tr>
+              <tr class="row-random" data-key="random" data-vals="50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50">
+                <td class="td-ds">Random guess</td>
+                <td data-mi="0">50.00</td><td data-mi="0">50.00</td><td data-mi="0">50.00</td>
+                <td data-mi="1" class="model-sep">50.00</td><td data-mi="1">50.00</td><td data-mi="1">50.00</td>
+                <td data-mi="2" class="model-sep">50.00</td><td data-mi="2">50.00</td><td data-mi="2">50.00</td>
+                <td data-mi="3" class="model-sep">50.00</td><td data-mi="3">50.00</td><td data-mi="3">50.00</td>
+                <td data-mi="4" class="model-sep">50.00</td><td data-mi="4">50.00</td><td data-mi="4">50.00</td>
+                <td data-mi="5" class="model-sep">50.00</td><td data-mi="5">50.00</td><td data-mi="5">50.00</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="rt-legend" role="group" aria-label="Scale-invariance table legend">
+        <span class="rt-legend-item"><span class="swatch swatch-teal" aria-hidden="true"></span> Best accuracy per model (across datasets)</span>
+        <span class="rt-legend-item"><span class="swatch swatch-red" aria-hidden="true"></span> Worst accuracy per model</span>
+        <span class="rt-legend-item">
+          <svg class="lock-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          Closed source (API)
+        </span>
+        <span class="rt-legend-item">
+          <svg class="lock-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>
+          Open weights
+        </span>
+      </div>
+
+      <p class="figure-cap results-cap">
+        <strong>Model performance on the scale-invariance task aggregated across all scales (0.1×, 0.3×, 0.5×, 0.9×).</strong>
+        All models achieve near-perfect performance on Times New Roman and Handwritten English characters, indicating robustness to scale changes. In contrast, performance on Omniglot is substantially lower and exhibits greater variation in recall (TPR) and specificity (TNR) across models.
+      </p>
+
+      <div class="results-figure-stack">
+        <div class="results-figure-pair">
+          <figure class="results-subfig">
+            <img class="paper-teaser-img" src="static/images/recall_specificity_selected_scripts_scale_0.3.pdf" alt="Recall and specificity by script at scale 0.3×, Qwen2.5-VL-7B" loading="lazy">
+            <figcaption class="results-subfig-cap">Qwen2.5-VL-7B</figcaption>
+          </figure>
+          <figure class="results-subfig">
+            <img class="paper-teaser-img" src="static/images/recall_specificity_selected_scripts_scale_0.3_32b.pdf" alt="Recall and specificity by script at scale 0.3×, Qwen2.5-VL-32B" loading="lazy">
+            <figcaption class="results-subfig-cap">Qwen2.5-VL-32B</figcaption>
+          </figure>
+        </div>
+        <p class="figure-cap results-cap">
+          <strong>Recall and specificity at scale 0.3× for representative scripts for the scale-invariance task.</strong>
+          <span class="cap-script-blue">English characters rendered in Times New Roman</span>,
+          <span class="cap-script-purple">Handwritten English characters</span>, and
+          <span class="cap-script-orange">Omniglot scripts</span> are shown in blue, purple, and orange respectively, and are selected to represent high-, medium-, and low-performing groups. Across both models, familiar scripts such as Greek and Latin consistently outperform less familiar scripts like Braille. While Qwen2.5-VL-32B achieves higher recall than Qwen2.5-VL-7B on low-performing Omniglot scripts, it exhibits lower specificity.
+        </p>
+      </div>
+
+      <div class="results-figure-stack">
+        <div class="results-figure-wide">
+          <img class="paper-teaser-img" src="static/images/model_category_performance_1x3.pdf" alt="Model accuracy on the scale-invariance task across scale factors for Times New Roman, Handwritten English, and Omniglot" loading="lazy">
+        </div>
+        <p class="figure-cap results-cap">
+          <strong>Model accuracy on the scale-invariance task across scale factors.</strong>
+          Both Qwen2.5-VL-7B and Qwen2.5-VL-32B maintain near-perfect accuracy for both Times New Roman and Handwritten English characters across all scales, while performance on Omniglot scripts is substantially and consistently lower for both models.
+        </p>
+      </div>
+
+      <h3 class="results-table-title results-table-title--after-cap">Can transformation invariance be instilled?</h3>
+      <p class="sec-lede sec-lede--compact sec-lede--wide">Model performance with in-context learning and structured visual prompting across scripts. Arrows indicate change in TPR relative to the <em>None</em> setting: <span class="tpr-legend-up">↑</span> improvement, <span class="tpr-legend-down">↓</span> degradation. Best TPR for each script–model pair is highlighted in teal. Few-shot and rotational-grid inputs often raise TPR but can lower TNR; gains tend to be larger for higher-capacity models.</p>
+      <p class="results-footnote">See the <a href="https://arxiv.org/abs/2604.01848" target="_blank" rel="noopener">paper</a> for details on few-shot and rotational-grid settings.</p>
+
+      <div class="results-outer">
+        <div class="results-scroll">
+          <table class="rt rt-icl" id="rt-icl">
+            <thead>
+              <tr>
+                <th colspan="2" class="rt-icl-corner" scope="colgroup"></th>
+                <th colspan="2" class="model-head rt-icl-h-api" data-mi="0" scope="colgroup">
+                  <svg class="lock-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-label="Closed"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                  GPT-5.2
+                </th>
+                <th colspan="2" class="model-head model-sep rt-icl-h-api" data-mi="1" scope="colgroup">
+                  <svg class="lock-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-label="Closed"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                  Gemini-2.5-Pro
+                </th>
+                <th colspan="2" class="model-head model-sep rt-icl-h-q25" data-mi="2" scope="colgroup">
+                  <svg class="lock-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>
+                  Qwen2.5-VL-7B
+                </th>
+                <th colspan="2" class="model-head model-sep rt-icl-h-q25" data-mi="3" scope="colgroup">
+                  <svg class="lock-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>
+                  Qwen2.5-VL-32B
+                </th>
+                <th colspan="2" class="model-head model-sep rt-icl-h-q3" data-mi="4" scope="colgroup">
+                  <svg class="lock-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>
+                  Qwen3-VL-8B
+                </th>
+                <th colspan="2" class="model-head model-sep rt-icl-h-q3" data-mi="5" scope="colgroup">
+                  <svg class="lock-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>
+                  Qwen3-VL-30B
+                </th>
+              </tr>
+              <tr>
+                <th class="col-ds" scope="col">Script</th>
+                <th class="col-ds rt-icl-setting" scope="col">ICL setting</th>
+                <th scope="col" data-mi="0">TNR</th><th scope="col" data-mi="0">TPR</th>
+                <th class="model-sep" scope="col" data-mi="1">TNR</th><th scope="col" data-mi="1">TPR</th>
+                <th class="model-sep" scope="col" data-mi="2">TNR</th><th scope="col" data-mi="2">TPR</th>
+                <th class="model-sep" scope="col" data-mi="3">TNR</th><th scope="col" data-mi="3">TPR</th>
+                <th class="model-sep" scope="col" data-mi="4">TNR</th><th scope="col" data-mi="4">TPR</th>
+                <th class="model-sep" scope="col" data-mi="5">TNR</th><th scope="col" data-mi="5">TPR</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td rowspan="3" class="td-ds">Malayalam (top-tier)</td>
+                <td class="td-ds td-setting">None</td>
+                <td data-mi="0">93.62</td><td data-mi="0">34.04</td>
+                <td class="model-sep" data-mi="1">100.00</td><td data-mi="1">38.30</td>
+                <td class="model-sep" data-mi="2">100.00</td><td data-mi="2">00.00</td>
+                <td class="model-sep" data-mi="3">97.87</td><td data-mi="3">06.38</td>
+                <td class="model-sep" data-mi="4">100.00</td><td data-mi="4">00.00</td>
+                <td class="model-sep" data-mi="5">100.00</td><td data-mi="5">02.13</td>
+              </tr>
+              <tr>
+                <td class="td-ds td-setting">Few-shot</td>
+                <td data-mi="0">91.49</td><td data-mi="0">85.11<span class="tpr-delta tpr-up" aria-label="TPR up vs None">↑</span></td>
+                <td class="model-sep" data-mi="1">97.87</td><td class="worst" data-mi="1"><span class="tpr-bad">34.04</span><span class="tpr-delta tpr-down" aria-label="TPR down vs None">↓</span></td>
+                <td class="model-sep" data-mi="2">100.00</td><td data-mi="2">00.00</td>
+                <td class="model-sep" data-mi="3">65.96</td><td data-mi="3">51.06<span class="tpr-delta tpr-up" aria-label="TPR up vs None">↑</span></td>
+                <td class="model-sep" data-mi="4">100.00</td><td data-mi="4">34.04<span class="tpr-delta tpr-up" aria-label="TPR up vs None">↑</span></td>
+                <td class="model-sep" data-mi="5">78.72</td><td data-mi="5">72.34<span class="tpr-delta tpr-up" aria-label="TPR up vs None">↑</span></td>
+              </tr>
+              <tr>
+                <td class="td-ds td-setting">Rotational grid</td>
+                <td data-mi="0">72.34</td><td class="best" data-mi="0">97.87<span class="tpr-delta tpr-up" aria-label="TPR up vs None">↑</span></td>
+                <td class="model-sep" data-mi="1">93.62</td><td class="best" data-mi="1">48.94<span class="tpr-delta tpr-up" aria-label="TPR up vs None">↑</span></td>
+                <td class="model-sep" data-mi="2">100.00</td><td data-mi="2">00.00</td>
+                <td class="model-sep" data-mi="3">91.49</td><td data-mi="3">12.77<span class="tpr-delta tpr-up" aria-label="TPR up vs None">↑</span></td>
+                <td class="model-sep" data-mi="4">65.96</td><td class="best" data-mi="4">65.96<span class="tpr-delta tpr-up" aria-label="TPR up vs None">↑</span></td>
+                <td class="model-sep" data-mi="5">23.40</td><td class="best" data-mi="5">87.23<span class="tpr-delta tpr-up" aria-label="TPR up vs None">↑</span></td>
+              </tr>
+              <tr class="rt-icl-sep"><td colspan="14"></td></tr>
+              <tr>
+                <td rowspan="3" class="td-ds">Tengwar (medium-tier)</td>
+                <td class="td-ds td-setting">None</td>
+                <td data-mi="0">100.00</td><td data-mi="0">20.00</td>
+                <td class="model-sep" data-mi="1">96.00</td><td data-mi="1">32.00</td>
+                <td class="model-sep" data-mi="2">100.00</td><td data-mi="2">00.00</td>
+                <td class="model-sep" data-mi="3">88.00</td><td data-mi="3">16.00</td>
+                <td class="model-sep" data-mi="4">100.00</td><td data-mi="4">00.00</td>
+                <td class="model-sep" data-mi="5">100.00</td><td data-mi="5">00.00</td>
+              </tr>
+              <tr>
+                <td class="td-ds td-setting">Few-shot</td>
+                <td data-mi="0">80.00</td><td data-mi="0">68.00<span class="tpr-delta tpr-up" aria-label="TPR up vs None">↑</span></td>
+                <td class="model-sep" data-mi="1">92.00</td><td data-mi="1">32.00</td>
+                <td class="model-sep" data-mi="2">100.00</td><td data-mi="2">00.00</td>
+                <td class="model-sep" data-mi="3">68.00</td><td class="best" data-mi="3">76.00<span class="tpr-delta tpr-up" aria-label="TPR up vs None">↑</span></td>
+                <td class="model-sep" data-mi="4">100.00</td><td data-mi="4">16.00<span class="tpr-delta tpr-up" aria-label="TPR up vs None">↑</span></td>
+                <td class="model-sep" data-mi="5">68.00</td><td data-mi="5">72.00<span class="tpr-delta tpr-up" aria-label="TPR up vs None">↑</span></td>
+              </tr>
+              <tr>
+                <td class="td-ds td-setting">Rotational grid</td>
+                <td data-mi="0">60.00</td><td class="best" data-mi="0">88.00<span class="tpr-delta tpr-up" aria-label="TPR up vs None">↑</span></td>
+                <td class="model-sep" data-mi="1">88.00</td><td class="best" data-mi="1">56.00<span class="tpr-delta tpr-up" aria-label="TPR up vs None">↑</span></td>
+                <td class="model-sep" data-mi="2">100.00</td><td data-mi="2">00.00</td>
+                <td class="model-sep" data-mi="3">88.00</td><td data-mi="3">24.00<span class="tpr-delta tpr-up" aria-label="TPR up vs None">↑</span></td>
+                <td class="model-sep" data-mi="4">72.00</td><td class="best" data-mi="4">88.00<span class="tpr-delta tpr-up" aria-label="TPR up vs None">↑</span></td>
+                <td class="model-sep" data-mi="5">40.00</td><td class="best" data-mi="5">76.00<span class="tpr-delta tpr-up" aria-label="TPR up vs None">↑</span></td>
+              </tr>
+              <tr class="rt-icl-sep"><td colspan="14"></td></tr>
+              <tr>
+                <td rowspan="3" class="td-ds">Braille (bottom-tier)</td>
+                <td class="td-ds td-setting">None</td>
+                <td data-mi="0">100.00</td><td data-mi="0">07.69</td>
+                <td class="model-sep" data-mi="1">100.00</td><td class="best" data-mi="1">50.00</td>
+                <td class="model-sep" data-mi="2">100.00</td><td data-mi="2">00.00</td>
+                <td class="model-sep" data-mi="3">65.38</td><td data-mi="3">15.38</td>
+                <td class="model-sep" data-mi="4">100.00</td><td data-mi="4">00.00</td>
+                <td class="model-sep" data-mi="5">100.00</td><td data-mi="5">03.85</td>
+              </tr>
+              <tr>
+                <td class="td-ds td-setting">Few-shot</td>
+                <td data-mi="0">92.31</td><td class="best" data-mi="0">73.08<span class="tpr-delta tpr-up" aria-label="TPR up vs None">↑</span></td>
+                <td class="model-sep" data-mi="1">96.15</td><td class="worst" data-mi="1"><span class="tpr-bad">26.92</span><span class="tpr-delta tpr-down" aria-label="TPR down vs None">↓</span></td>
+                <td class="model-sep" data-mi="2">100.00</td><td data-mi="2">00.00</td>
+                <td class="model-sep" data-mi="3">88.46</td><td class="best" data-mi="3">19.23<span class="tpr-delta tpr-up" aria-label="TPR up vs None">↑</span></td>
+                <td class="model-sep" data-mi="4">100.00</td><td data-mi="4">11.54<span class="tpr-delta tpr-up" aria-label="TPR up vs None">↑</span></td>
+                <td class="model-sep" data-mi="5">92.31</td><td class="best" data-mi="5">50.00<span class="tpr-delta tpr-up" aria-label="TPR up vs None">↑</span></td>
+              </tr>
+              <tr>
+                <td class="td-ds td-setting">Rotational grid</td>
+                <td data-mi="0">69.23</td><td data-mi="0">65.38<span class="tpr-delta tpr-up" aria-label="TPR up vs None">↑</span></td>
+                <td class="model-sep" data-mi="1">100.00</td><td class="worst" data-mi="1"><span class="tpr-bad">46.15</span><span class="tpr-delta tpr-down" aria-label="TPR down vs None">↓</span></td>
+                <td class="model-sep" data-mi="2">100.00</td><td data-mi="2">00.00</td>
+                <td class="model-sep" data-mi="3">100.00</td><td class="worst" data-mi="3"><span class="tpr-bad">00.00</span><span class="tpr-delta tpr-down" aria-label="TPR down vs None">↓</span></td>
+                <td class="model-sep" data-mi="4">100.00</td><td class="best" data-mi="4">11.54<span class="tpr-delta tpr-up" aria-label="TPR up vs None">↑</span></td>
+                <td class="model-sep" data-mi="5">73.08</td><td class="best" data-mi="5">50.00<span class="tpr-delta tpr-up" aria-label="TPR up vs None">↑</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="rt-legend rt-icl-legend" role="group" aria-label="ICL table legend">
+        <span class="rt-legend-item"><span class="swatch swatch-teal" aria-hidden="true"></span> Best TPR per script–model pair</span>
+        <span class="rt-legend-item"><span class="swatch swatch-red" aria-hidden="true"></span> TPR decrease vs None</span>
+        <span class="rt-legend-item"><span class="tpr-legend-up">↑</span> / <span class="tpr-legend-down">↓</span> TPR change vs None; no arrow if unchanged.</span>
+      </div>
+
+      <p class="figure-cap results-cap">
+        <strong>While few-shot ICL and rotational-grid prompting help, they do not fix robust rotation recognition.</strong>
+        From these two experiments, it is clear that both approaches help instill <em>some</em> but not a robust understanding of rotation recognition. While we hypothesized that ICL and the rotational grid would provide the visual evidence necessary to map the input across different angles, it appears to make the high-capacity models “over-eager” and induce a confirmation bias that spikes TPR at the expense of discriminative accuracy.
+      </p>
+
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <section>
+    <div class="wrap">
+      <h2 class="sec-title">Citation</h2>
+      <div class="citation-box">
+        <div class="citation-toolbar">
+          <span class="citation-label">BibTeX</span>
+          <button id="copy-btn" type="button">Copy</button>
+        </div>
+        <pre class="citation-pre" id="cite-text"><code>@article{qiu2026semantic,
+  title={Semantic Richness or Geometric Reasoning? The Fragility of VLM's Visual Invariance},
+  author={Qiu, Jason and Meurer, Zachary and Thomas, Xavier and Ghadiyaram, Deepti},
+  journal={arXiv preprint arXiv:2604.01848},
+  year={2026},
+  url={https://arxiv.org/abs/2604.01848}
+}</code></pre>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    Boston University · 2026 · Contact: <a href="https://xavierohan.github.io" target="_blank" rel="noopener">xavierohan.github.io</a>
+  </footer>
+
+  <script src="static/js/teaser-pdf-img.js"></script>
+  <script src="static/js/results-table.js"></script>
+  <script>
+    document.getElementById('copy-btn').addEventListener('click', function () {
+      var text = document.getElementById('cite-text').textContent;
+      navigator.clipboard.writeText(text).then(function () {
+        var btn = document.getElementById('copy-btn');
+        var o = btn.textContent;
+        btn.textContent = 'Copied!';
+        setTimeout(function () { btn.textContent = o; }, 1600);
+      });
+    });
+  </script>
+</body>
+</html>
