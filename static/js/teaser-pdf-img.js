@@ -1,4 +1,4 @@
-/* PDF-as-image fallback (same idea as reference/static/js/index.js) — no jQuery */
+/* PDF-as-image: try .pdf in <img> first; fall back to .jpg then .png when unsupported or zero-size (e.g. Chrome). */
 document.addEventListener('DOMContentLoaded', function () {
   document.querySelectorAll('img.paper-teaser-img[src$=".pdf"]').forEach(function (img) {
     var pdfSrc = img.getAttribute('src');
@@ -23,30 +23,61 @@ document.addEventListener('DOMContentLoaded', function () {
       testImg.src = fallbackSrc;
     }
 
-    function tryJpg() {
-      tryFallback(jpgSrc, null);
-    }
     function tryPng() {
-      tryFallback(pngSrc, tryJpg);
+      tryFallback(pngSrc, null);
+    }
+    function tryJpg() {
+      tryFallback(jpgSrc, tryPng);
+    }
+
+    function applyFallback() {
+      if (!fallbackAttempted) tryJpg();
     }
 
     function onError() {
-      if (!fallbackAttempted) tryPng();
+      applyFallback();
       img.removeEventListener('error', onError);
     }
 
     function checkRender() {
+      if (fallbackAttempted) return;
       if (img.complete && (img.naturalWidth === 0 || img.naturalHeight === 0)) {
-        if (!fallbackAttempted) tryPng();
+        applyFallback();
       }
     }
 
-    img.addEventListener('error', onError);
-    img.addEventListener('load', checkRender);
-    if (img.complete) {
+    function scheduleRenderChecks() {
       checkRender();
-    } else {
-      setTimeout(checkRender, 500);
+      requestAnimationFrame(function () {
+        requestAnimationFrame(checkRender);
+      });
+      [50, 200, 500].forEach(function (ms) {
+        setTimeout(checkRender, ms);
+      });
     }
+
+    function onLoad() {
+      if (typeof img.decode === 'function') {
+        img.decode().catch(applyFallback);
+      }
+      scheduleRenderChecks();
+    }
+
+    img.addEventListener('error', onError);
+    img.addEventListener('load', onLoad);
+    if (img.complete) {
+      onLoad();
+    } else {
+      scheduleRenderChecks();
+    }
+
+    setTimeout(function () {
+      if (fallbackAttempted) return;
+      var src = img.getAttribute('src') || '';
+      if (!/\.pdf(\?|$)/i.test(src)) return;
+      if (!img.complete || img.naturalWidth === 0 || img.naturalHeight === 0) {
+        applyFallback();
+      }
+    }, 2000);
   });
 });
