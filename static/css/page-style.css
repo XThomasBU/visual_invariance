@@ -66,12 +66,38 @@ h1.paper-title {
   line-height: 1.18;
   color: var(--ink);
   max-width: 740px;
-  margin: 0 auto 2rem;
+  margin: 0 auto 1.15rem;
   font-weight: 400;
 }
 h1.paper-title em {
   font-style: italic;
   color: var(--accent);
+}
+
+.venue-banner {
+  display: inline-flex;
+  align-items: center;
+  gap: 1.35rem;
+  margin: 0 auto 1.85rem;
+  padding: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-mid);
+}
+.venue-banner::before,
+.venue-banner::after {
+  content: '';
+  width: 4.25rem;
+  height: 1.5px;
+  flex-shrink: 0;
+}
+.venue-banner::before {
+  background: linear-gradient(90deg, transparent, var(--rule));
+}
+.venue-banner::after {
+  background: linear-gradient(90deg, var(--rule), transparent);
 }
 
 .authors {
@@ -189,6 +215,34 @@ section { padding: 4rem 0; }
   font-weight: 300;
   font-size: 0.96rem;
   line-height: 1.65;
+}
+.motivation-lede-punch {
+  display: inline;
+  color: var(--ink-mid);
+  font-weight: 500;
+  font-size: 1.08em;
+  letter-spacing: -0.015em;
+  line-height: 1.55;
+  padding: 0.14em 0.4em 0.16em 0.32em;
+  margin-inline: -0.06em 0;
+  border-radius: 0.42em 0.12em 0.38em 0.18em / 0.22em 0.4em 0.16em 0.32em;
+  background:
+    linear-gradient(102deg, rgba(255, 255, 255, 0.65) 0%, transparent 45%),
+    linear-gradient(198deg, transparent 0%, rgba(106, 158, 150, 0.07) 85%),
+    linear-gradient(14deg, rgba(178, 218, 208, 0.35) 0%, transparent 52%),
+    linear-gradient(168deg, var(--hook-paint-deep) 0%, var(--hook-paint-mid) 50%, var(--hook-paint-light) 100%);
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  box-shadow:
+    0.05em 0.08em 0 0 rgba(106, 158, 150, 0.08),
+    -0.05em 0.04em 0 0 rgba(255, 255, 255, 0.9),
+    0.08em -0.04em 0 -0.02em rgba(184, 222, 215, 0.3),
+    inset 0 -0.05em 0 0 rgba(46, 95, 90, 0.06);
+}
+.motivation-lede-punch em {
+  font-style: normal;
+  font-weight: 700;
+  color: var(--accent);
 }
 .dataset-collage {
   display: flex;
