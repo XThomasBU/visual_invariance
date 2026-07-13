@@ -147,7 +147,7 @@ h1.paper-title em {
 }
 .btn-outline:hover { background: var(--accent-lt); border-color: var(--accent); color: var(--accent); }
 
-.ico { width: 15px; height: 15px; flex-shrink: 0; }
+.ico { width: 15px; height: 15px; flex-shrink: 0; display: block; }
 
 section { padding: 4rem 0; }
 
